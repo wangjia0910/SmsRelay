@@ -1,21 +1,21 @@
-home/runner/work/SmsRelay/SmsRelay/app/build.gradle.kts:14:5: Unreachable code
-w: file:///home/runner/work/SmsRelay/SmsRelay/app/build.gradle.kts:14:9: Variable 'store' is never used
-e: file:///home/runner/work/SmsRelay/SmsRelay/app/build.gradle.kts:14:66: Unresolved reference: isNotBlank
-w: file:///home/runner/work/SmsRelay/SmsRelay/app/build.gradle.kts:15:5: Unreachable code
-w: file:///home/runner/work/SmsRelay/SmsRelay/app/build.gradle.kts:44:9: 'resourceConfigurations: MutableSet<String>' is deprecated. Support for resource configurations will be removed. For language resource configurations in applications, use androidResources.localeFilters.
+home/runner/work/SmsRelay/SmsRelay/app/build.gradle.kts:16:5: Unreachable code
+w: file:///home/runner/work/SmsRelay/SmsRelay/app/build.gradle.kts:16:9: Variable 'store' is never used
+e: file:///home/runner/work/SmsRelay/SmsRelay/app/build.gradle.kts:16:66: Unresolved reference: isNotBlank
+w: file:///home/runner/work/SmsRelay/SmsRelay/app/build.gradle.kts:17:5: Unreachable code
+w: file:///home/runner/work/SmsRelay/SmsRelay/app/build.gradle.kts:46:9: 'resourceConfigurations: MutableSet<String>' is deprecated. Support for resource configurations will be removed. For language resource configurations in applications, use androidResources.localeFilters.
 
 FAILURE: Build failed with an exception.
 
 * Where:
-Build file '/home/runner/work/SmsRelay/SmsRelay/app/build.gradle.kts' line: 12
+Build file '/home/runner/work/SmsRelay/SmsRelay/app/build.gradle.kts' line: 14
 
 * What went wrong:
 Script compilation errors:
 
-  Line 12:     val p = java.util.Properties()
+  Line 14:     val p = java.util.Properties()
                             ^ Unresolved reference: util
 
-  Line 14:     val store = p.getProperty("RELEASE_STORE_FILE")?.takeIf { it.isNotBlank() } ?: return null
+  Line 16:     val store = p.getProperty("RELEASE_STORE_FILE")?.takeIf { it.isNotBlank() } ?: return null
                                                                             ^ Unresolved reference: isNotBlank
 
 2 errors
@@ -26,7 +26,7 @@ Script compilation errors:
 > Get more help at https://help.gradle.org.
 
 * Exception is:
-ScriptCompilationException(scriptCompilationErrors=[ScriptCompilationError(message=Unresolved reference: util, location=/home/runner/.gradle/.tmp/gradle-kotlin-dsl-11220731944514355270.tmp/build.gradle.kts (12:18)), ScriptCompilationError(message=Unresolved reference: isNotBlank, location=/home/runner/.gradle/.tmp/gradle-kotlin-dsl-11220731944514355270.tmp/build.gradle.kts (14:66))])
+ScriptCompilationException(scriptCompilationErrors=[ScriptCompilationError(message=Unresolved reference: util, location=/home/runner/.gradle/.tmp/gradle-kotlin-dsl-10106765042163383020.tmp/build.gradle.kts (14:18)), ScriptCompilationError(message=Unresolved reference: isNotBlank, location=/home/runner/.gradle/.tmp/gradle-kotlin-dsl-10106765042163383020.tmp/build.gradle.kts (16:66))])
 	at org.gradle.kotlin.dsl.support.KotlinCompilerKt.compileKotlinScriptModuleTo(KotlinCompiler.kt:190)
 	at org.gradle.kotlin.dsl.support.KotlinCompilerKt.compileKotlinScriptToDirectory(KotlinCompiler.kt:148)
 	at org.gradle.kotlin.dsl.execution.ResidualProgramCompiler$compileScript$1.invoke(ResidualProgramCompiler.kt:713)
