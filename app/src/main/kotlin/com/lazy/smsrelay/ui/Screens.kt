@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -654,7 +655,7 @@ private fun ChannelDialog(
                         target, { target = it },
                         label = { Text(if (type == ChannelType.TELEGRAM) "chat_id" else "目标手机号") },
                         singleLine = true,
-                        keyboardOptions = androidx.compose.ui.text.input.KeyboardOptions(
+                        keyboardOptions = KeyboardOptions(
                             keyboardType = if (type == ChannelType.SMS_OUT) KeyboardType.Phone else KeyboardType.Text
                         )
                     )
