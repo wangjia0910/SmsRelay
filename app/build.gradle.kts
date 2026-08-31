@@ -22,8 +22,10 @@ fun releaseSigning(rootDir: File): Map<String, String>? {
 
 android {
     namespace = "com.lazy.smsrelay"
-    // 用 Android 17 的 SDK 编译，拿到最新 API 与 lint 检查
-    compileSdk = 37
+    // compileSdk 锁 36：截至 2026-08-31，官方 SDK 稳定仓库只有 platform-36，
+    // android-37(API 37) 尚未进入稳定源，compileSdk=37 在本地与 CI 都无法编译。
+    // 运行时在 Android 17 设备上以 targetSdk=36 兼容行为运行，且不会触发 OTP 3 小时延迟。
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.lazy.smsrelay"
