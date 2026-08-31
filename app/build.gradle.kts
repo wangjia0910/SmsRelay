@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -48,7 +50,7 @@ android {
         create("release") {
             val s = releaseSigning(rootDir)
             if (s != null) {
-                storeFile = file(s["storeFile"]!!)
+                storeFile = rootProject.file(s["storeFile"]!!)
                 storePassword = s["storePassword"]
                 keyAlias = s["keyAlias"]
                 keyPassword = s["keyPassword"]
