@@ -141,6 +141,11 @@ object Prefs {
 
     fun notifyBackupEnabled(ctx: Context): Boolean = ctx.notifyBackupEnabled
     fun setNotifyBackup(ctx: Context, v: Boolean) { ctx.notifyBackupEnabled = v }
+    // 注意：扩展属性 Context.serviceEnabled 会生成 setServiceEnabled(Context,Boolean)，
+    // 与下面的函数名冲突（Platform declaration clash），故函数名用 update* 前缀避开。
+    fun updateServiceEnabled(ctx: Context, v: Boolean) { ctx.serviceEnabled = v }
+    fun updateMaskOtpInLog(ctx: Context, v: Boolean) { ctx.maskOtpInLog = v }
+    fun updateOtpDropExpired(ctx: Context, v: Boolean) { ctx.otpDropExpired = v }
     fun maskOtpInLog(ctx: Context): Boolean = ctx.maskOtpInLog
     fun otpTtlMinutes(ctx: Context): Int = ctx.otpTtlMinutes
     fun otpDropExpired(ctx: Context): Boolean = ctx.otpDropExpired
