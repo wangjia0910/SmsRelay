@@ -194,7 +194,7 @@ object Sender {
             ) != android.content.pm.PackageManager.PERMISSION_GRANTED
         ) throw IOException("缺少 SEND_SMS 权限")
 
-        val smsManager = resolveSmsManager(ch.simSlot)
+        val smsManager = resolveSmsManager(ctx, ch.simSlot)
         val parts = smsManager.divideMessage(item.text)
 
         val sentPi = pendingIntent(ctx, 1001, item.id, "SENT")
@@ -215,15 +215,20 @@ object Sender {
 
     /**
      * 选卡：优先用卡槽号换 subId；拿不到就退回默认卡。
-     * 部分 ROM 上 getSubscriptionIds 会因为权限或实现差异返回 null，
-     * 所以整段必须 try/catch —— 宁可用默认卡发出去，也不要抛异常导致重试循环。
+     * getSubscriptionIds 在不同 SDK/ROM 上行为不稳定，这里改用
+     * SubscriptionManager.from(ctx).getActiveSubscriptionInfoForSimSlotIndex
+     * 取确切的 subId，整段包在 runCatching 里 —— 宁可用默认卡发出去，
+     * 也不要抛异常导致重试循环。
      */
-    private fun resolveSmsManager(simSlot: Int): SmsManager {
+    @SuppressLint("MissingPermission")
+    private fun resolveSmsManager(ctx: Context, simSlot: Int): SmsManager {
         if (simSlot >= 0 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             runCatching {
-                val ids = SubscriptionManager.getSubscriptionIds()
-                if (ids != null && simSlot in ids.indices) {
-                    return SmsManager.getSmsManagerForSubscriptionId(ids[simSlot])
+                val subId = SubscriptionManager.from(ctx)
+                    .getActiveSubscriptionInfoForSimSlotIndex(simSlot)
+                    ?.subscriptionId
+                if (subId != null && subId > 0) {
+                    return SmsManager.getSmsManagerForSubscriptionId(subId)
                 }
             }
         }
