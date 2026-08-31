@@ -1,0 +1,23 @@
+# ============================================================
+# 复制本文件为 local.properties（该文件已被 .gitignore 忽略，不会进版本库）
+# 仅本地使用，请勿提交。
+# ============================================================
+
+# 本机 Android SDK 路径（必填，否则 Gradle 找不到编译平台）
+# Windows 示例：
+sdk.dir=C\\:/Android/Sdk
+# macOS / Linux 示例：
+# sdk.dir=/Users/yourname/Android/Sdk
+
+# ---- 可选：release 签名 ----
+# 留空则 release 构建会自动回退到 Android 默认 debug 密钥，
+# 产出的 apk 可直接 adb install 到本机自用，但无法作为正式包分发/上架。
+#
+# 生成自己的签名密钥（一次性）：
+#   keytool -genkeypair -v -keystore release.keystore -alias smsrelay \
+#     -keyalg RSA -keysize 2048 -validity 10000
+# 然后把下面四项填好（路径相对于工程根目录或写绝对路径）：
+RELEASE_STORE_FILE=release.keystore
+RELEASE_STORE_PASSWORD=
+RELEASE_KEY_ALIAS=smsrelay
+RELEASE_KEY_PASSWORD=

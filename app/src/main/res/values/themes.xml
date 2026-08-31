@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+      targetSdk 36 起系统会强制边到边绘制。主题里把状态栏设为透明，
+      具体 inset 由 Compose 的 Scaffold / safeDrawing 处理，不要试图用
+      windowOptOutEdgeToEdgeEnforcement 规避（该开关已被官方标记为临时方案）。
+    -->
+    <style name="Theme.SmsRelay" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowBackground">@android:color/white</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+</resources>
