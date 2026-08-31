@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">懒人短信转发</string>
+    <string name="app_name">SmsRelay</string>
     <string name="service_name">短信转发服务</string>
     <string name="notification_listener_label">通知辅助（可选补偿通道）</string>
     <string name="notify_title_running">短信转发运行中</string>

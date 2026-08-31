@@ -76,7 +76,7 @@ object Guards {
             key = "sms",
             title = "短信权限",
             desc = "接收短信是转发的基础。缺少 RECEIVE_SMS 时系统根本不会把短信广播发给你。",
-            manualPath = "设置 → 应用设置 → 应用管理 → 懒人短信转发 → 权限管理 → 短信（设为「始终允许」）",
+            manualPath = "设置 → 应用设置 → 应用管理 → SmsRelay → 权限管理 → 短信（设为「始终允许」）",
             critical = true,
             state = if (smsPermissionOk(ctx)) GuardState.OK else GuardState.TODO,
             jumpable = ctx.resolve(details(ctx))
@@ -87,7 +87,7 @@ object Guards {
             key = "notify",
             title = "通知权限",
             desc = "Android 13+ 必须显式授权。前台服务依赖常驻通知，关掉通知等于关掉保活。",
-            manualPath = "设置 → 应用设置 → 应用管理 → 懒人短信转发 → 通知管理 → 允许通知（开启）",
+            manualPath = "设置 → 应用设置 → 应用管理 → SmsRelay → 通知管理 → 允许通知（开启）",
             critical = true,
             state = if (NotificationManagerCompat.from(ctx).areNotificationsEnabled())
                 GuardState.OK else GuardState.TODO,
@@ -99,7 +99,7 @@ object Guards {
             key = "autostart",
             title = "自启动（关键）",
             desc = "不开启自启动，重启手机后 app 一次都不会被拉起，直到你手动打开它。",
-            manualPath = "设置 → 应用设置 → 自启动管理 → 找到「懒人短信转发」→ 打开开关\n" +
+            manualPath = "设置 → 应用设置 → 自启动管理 → 找到「SmsRelay」→ 打开开关\n" +
                 "（部分版本路径为：手机管家 → 应用管理 → 自启动）",
             critical = true,
             state = GuardState.UNKNOWN,
@@ -111,7 +111,7 @@ object Guards {
             key = "battery_strategy",
             title = "省电策略设为「无限制」（关键）",
             desc = "澎湃OS 默认对第三方应用做后台限制，息屏后网络与 CPU 会被冻结，转发直接卡在队列里。",
-            manualPath = "设置 → 应用设置 → 应用管理 → 懒人短信转发 → 省电策略 → 选择「无限制」",
+            manualPath = "设置 → 应用设置 → 应用管理 → SmsRelay → 省电策略 → 选择「无限制」",
             critical = true,
             state = GuardState.UNKNOWN,
             jumpable = batteryStrategyIntents(ctx).any { ctx.resolve(it) }
@@ -145,7 +145,7 @@ object Guards {
             key = "nl",
             title = "通知使用权（可选）",
             desc = "开启后可在短信广播被 ROM 拦截时，从通知里兜底抓取内容。注意：Android 15+ 未授信的监听器读到的验证码会被系统脱敏，因此它只能当备份，不能当主力。",
-            manualPath = "设置 → 通知与控制中心 → 通知使用权（或「通知读取权限」）→ 勾选「懒人短信转发」",
+            manualPath = "设置 → 通知与控制中心 → 通知使用权（或「通知读取权限」）→ 勾选「SmsRelay」",
             critical = false,
             state = if (Prefs.notifyBackupEnabled(ctx)) {
                 if (notificationListenerGranted(ctx)) GuardState.OK else GuardState.TODO
@@ -169,7 +169,7 @@ object Guards {
             key = "default_sms",
             title = "设为默认短信应用（可选，面向 Android 17）",
             desc = "Android 17 起，非默认短信应用读取含验证码的短信会被延迟 3 小时。当前 targetSdk 锁定在 36 不受影响；若将来必须升到 37，成为默认短信应用是唯一能保住实时性的路径。",
-            manualPath = "设置 → 应用设置 → 默认应用设置 → 短信 → 选择「懒人短信转发」",
+            manualPath = "设置 → 应用设置 → 默认应用设置 → 短信 → 选择「SmsRelay」",
             critical = false,
             state = GuardState.UNKNOWN,
             jumpable = defaultSmsIntents(ctx).any { ctx.resolve(it) }

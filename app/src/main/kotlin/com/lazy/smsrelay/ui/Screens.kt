@@ -116,7 +116,7 @@ fun AppNav(ctx: Context, onRequestSmsPermission: () -> Unit) {
         snackbarHost = { SnackbarHost(snackbar) },
         topBar = {
             TopAppBar(
-                title = { Text("懒人短信转发") },
+                title = { Text("SmsRelay") },
                 actions = {
                     IconButton(onClick = { guardRefresh++ }) {
                         Icon(Icons.Default.Refresh, contentDescription = "刷新自检")
@@ -564,7 +564,7 @@ private fun ChannelsScreen(
                                 scope.launch {
                                     val r = withContext(Dispatchers.IO) {
                                         runCatching {
-                                            Sender.test(ctx, c, "【测试】懒人短信转发通道连通性测试")
+                                            Sender.test(ctx, c, "【测试】SmsRelay 通道连通性测试")
                                         }
                                     }
                                     setMessage(
