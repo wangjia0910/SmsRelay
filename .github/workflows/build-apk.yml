@@ -1,0 +1,58 @@
+name: Build SmsRelay APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main, master ]
+    paths-ignore: [ 'docs/**', '**.md' ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install SDK packages (android-37 + build-tools)
+        run: |
+          sdkmanager "platforms;android-37" "platform-tools"
+          # build-tools 版本按可用情况回退尝试
+          for v in 37.0.0 36.0.0 35.0.0; do
+            if sdkmanager "build-tools;$v"; then echo "build-tools $v installed"; break; fi
+          done
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: Generate signing keystore (CI 临时，仅供出包)
+        run: |
+          keytool -genkeypair -v -keystore release.keystore -alias smsrelay \
+            -keyalg RSA -keysize 2048 -validity 10000 \
+            -storepass android -keypass android \
+            -dname "CN=SmsRelay,OU=Dev,O=Lazy"
+
+      - name: Write local.properties for signing
+        run: |
+          echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
+          echo "RELEASE_STORE_FILE=release.keystore" >> local.properties
+          echo "RELEASE_STORE_PASSWORD=android" >> local.properties
+          echo "RELEASE_KEY_ALIAS=smsrelay" >> local.properties
+          echo "RELEASE_KEY_PASSWORD=android" >> local.properties
+
+      - name: Build release APK
+        run: ./gradlew assembleRelease --no-daemon
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: SmsRelay-release-apk
+          path: app/build/outputs/apk/release/app-release.apk
