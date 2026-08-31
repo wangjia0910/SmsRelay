@@ -50,8 +50,8 @@
 3. 构建成功后，自动发布一个 **`ci-build-<run_id>`** 的 Release，APK 作为资产可直接下载
 
 > 临时 keystore 仅供自用；若要正式分发，请改用你自己的签名密钥（见方式二）。
-> 最新一次成功构建（run `33398665618`）的 APK：
-> `https://github.com/wangjia0910/SmsRelay/releases/download/ci-build-33398665618/app-release.apk`
+> 每次成功的 CI 运行都会自动发布一个 **`ci-build-<run_id>`** 的 Release，APK 就作为该 Release 的资产。
+> 取最新包：打开仓库 **Releases** 页（https://github.com/wangjia0910/SmsRelay/releases）列表最顶部的 `ci-build-*` 即为最近一次构建，下载其中的 `app-release.apk` 即可。
 
 ### 方式二：本机 Android Studio（最直观）
 1. 安装支持 compileSdk 36 的 Android Studio（最新稳定版）
