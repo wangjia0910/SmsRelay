@@ -211,7 +211,7 @@ private fun GuardScreen(
                         Text("转发总开关", Modifier.weight(1f))
                         Switch(checked = serviceOn, onCheckedChange = {
                             serviceOn = it
-                            ctx.serviceEnabled = it
+                            Prefs.updateServiceEnabled(ctx, it)
                             if (it) RelayService.tryStart(ctx) else RelayService.stop(ctx)
                             tick++
                         })
