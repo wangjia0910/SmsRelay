@@ -6,6 +6,10 @@ on:
     branches: [ main, master ]
     paths-ignore: [ 'docs/**', '**.md' ]
 
+# 需要 contents: write 以便失败时把诊断日志提交回仓库、成功时创建 Release
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -23,10 +27,10 @@ jobs:
 
       - name: Install Android SDK (cmdline-tools + platform 36)
         run: |
-          mkdir -p $ANDROID_SDK_ROOT/cmdline-tools
+          mkdir -p "$ANDROID_SDK_ROOT/cmdline-tools"
           curl -sSL --max-time 180 https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -o cmdtools.zip
-          unzip -q cmdtools.zip -d $ANDROID_SDK_ROOT/cmdline-tools
-          mv $ANDROID_SDK_ROOT/cmdline-tools/cmdline-tools $ANDROID_SDK_ROOT/cmdline-tools/latest
+          unzip -q cmdtools.zip -d "$ANDROID_SDK_ROOT/cmdline-tools"
+          mv "$ANDROID_SDK_ROOT/cmdline-tools/cmdline-tools" "$ANDROID_SDK_ROOT/cmdline-tools/latest"
           export PATH="$PATH:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin"
           yes | sdkmanager --licenses
           sdkmanager "platforms;android-36" "build-tools;36.0.0"
@@ -50,22 +54,56 @@ jobs:
           echo "RELEASE_KEY_PASSWORD=android" >> local.properties
 
       - name: Build release APK
-        run: ./gradlew assembleRelease --no-daemon --stacktrace 2>&1 | tee build.log
-
-      - name: Capture build error (diagnostic)
-        if: failure()
         run: |
-          mkdir -p ci-diag
-          tail -c 12000 build.log > ci-diag/error.log
-          git config user.email "ci@users.noreply.github.com"
-          git config user.name "ci-bot"
-          git add ci-diag/error.log
-          git commit -m "ci: capture build error [skip ci]" || true
-          git push "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/wangjia0910/SmsRelay.git" HEAD:master || true
+          set -o pipefail
+          ./gradlew assembleRelease --no-daemon --stacktrace 2>&1 | tee build.log
 
-      - name: Upload APK
+      - name: Verify APK produced
+        run: |
+          APK=app/build/outputs/apk/release/app-release.apk
+          if [ ! -f "$APK" ]; then
+            echo "::error::APK not found at $APK"
+            echo "---- apk output tree ----"
+            ls -laR app/build/outputs/apk 2>/dev/null || true
+            exit 1
+          fi
+          echo "APK produced: $APK ($(stat -c%s "$APK") bytes)"
+
+      - name: Upload APK artifact
         if: success()
         uses: actions/upload-artifact@v4
         with:
           name: SmsRelay-release-apk
           path: app/build/outputs/apk/release/app-release.apk
+          if-no-files-found: error
+
+      - name: Publish APK to GitHub Release (per-run, sandbox-verifiable)
+        if: success()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -e
+          APK=app/build/outputs/apk/release/app-release.apk
+          TAG="ci-build-${{ github.run_id }}"
+          gh release delete "$TAG" --yes || true
+          git push --delete origin "$TAG" || true
+          gh release create "$TAG" "$APK" \
+            --title "CI Build #${{ github.run_id }}" \
+            --notes "Automated SmsRelay release APK from workflow run ${{ github.run_id }}."
+          echo "RELEASE_TAG=$TAG" >> "$GITHUB_ENV"
+
+      - name: Capture build error (diagnostic -> committed & API-readable)
+        if: failure()
+        run: |
+          mkdir -p ci-diag
+          {
+            echo "run_id=${{ github.run_id }}"
+            echo "commit=${{ github.sha }}"
+            echo "time=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          } > ci-diag/meta.txt
+          tail -c 30000 build.log > ci-diag/error.log
+          git config user.email "ci@users.noreply.github.com"
+          git config user.name "ci-bot"
+          git add ci-diag/
+          git commit -m "ci: capture build error [skip ci]" || true
+          git push "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/wangjia0910/SmsRelay.git" HEAD:master || true
