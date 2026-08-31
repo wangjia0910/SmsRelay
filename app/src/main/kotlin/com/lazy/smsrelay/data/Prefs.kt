@@ -141,12 +141,9 @@ object Prefs {
 
     fun notifyBackupEnabled(ctx: Context): Boolean = ctx.notifyBackupEnabled
     fun setNotifyBackup(ctx: Context, v: Boolean) { ctx.notifyBackupEnabled = v }
-    fun setServiceEnabled(ctx: Context, v: Boolean) { ctx.serviceEnabled = v }
     fun maskOtpInLog(ctx: Context): Boolean = ctx.maskOtpInLog
-    fun setMaskOtpInLog(ctx: Context, v: Boolean) { ctx.maskOtpInLog = v }
     fun otpTtlMinutes(ctx: Context): Int = ctx.otpTtlMinutes
     fun otpDropExpired(ctx: Context): Boolean = ctx.otpDropExpired
-    fun setOtpDropExpired(ctx: Context, v: Boolean) { ctx.otpDropExpired = v }
     fun inboxRescan(ctx: Context): Boolean = ctx.inboxRescan
     fun rescanMinutes(ctx: Context): Int = ctx.rescanMinutes
     fun dedupSeconds(ctx: Context): Int = ctx.dedupSeconds
