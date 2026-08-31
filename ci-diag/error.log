@@ -49,17 +49,16 @@ Unable to strip the following libraries, packaging them as they are: libandroidx
 > Task :app:mapReleaseSourceSetPaths
 > Task :app:generateReleaseResources
 > Task :app:packageReleaseResources
-> Task :app:mergeReleaseResources
 > Task :app:createReleaseCompatibleScreenManifests
 > Task :app:extractDeepLinksRelease
 > Task :app:parseReleaseLocalResources
+> Task :app:mergeReleaseResources
 > Task :app:processReleaseMainManifest
 > Task :app:processReleaseManifest
-> Task :app:processReleaseManifestForPackage
 > Task :app:javaPreCompileRelease
 > Task :app:desugarReleaseFileDependencies
 > Task :app:mergeReleaseStartupProfile
-> Task :app:processReleaseResources
+> Task :app:processReleaseManifestForPackage
 > Task :app:mergeExtDexRelease
 > Task :app:mergeReleaseArtProfile
 > Task :app:mergeReleaseShaders
@@ -67,21 +66,20 @@ Unable to strip the following libraries, packaging them as they are: libandroidx
 > Task :app:generateReleaseAssets UP-TO-DATE
 > Task :app:mergeReleaseAssets
 > Task :app:compressReleaseAssets
+> Task :app:processReleaseResources
 > Task :app:extractReleaseVersionControlInfo
 > Task :app:extractProguardFiles
 > Task :app:collectReleaseDependencies
-> Task :app:optimizeReleaseResources
 > Task :app:sdkReleaseDependencyData
 > Task :app:validateSigningRelease
+> Task :app:optimizeReleaseResources
 > Task :app:writeReleaseAppMetadata
 > Task :app:writeReleaseSigningConfigVersions
 
 > Task :app:compileReleaseKotlin FAILED
-e: file:///home/runner/work/SmsRelay/SmsRelay/app/src/main/kotlin/com/lazy/smsrelay/net/Channels.kt:60:33 Unresolved reference 'extractOtp'.
-e: file:///home/runner/work/SmsRelay/SmsRelay/app/src/main/kotlin/com/lazy/smsrelay/net/Channels.kt:223:47 Unresolved reference 'getSubscriptionIds'.
-e: file:///home/runner/work/SmsRelay/SmsRelay/app/src/main/kotlin/com/lazy/smsrelay/net/Channels.kt:224:40 Unresolved reference 'isNotEmpty'.
-e: file:///home/runner/work/SmsRelay/SmsRelay/app/src/main/kotlin/com/lazy/smsrelay/net/Channels.kt:225:73 No 'get' operator method providing array access.
-e: file:///home/runner/work/SmsRelay/SmsRelay/app/src/main/kotlin/com/lazy/smsrelay/ui/Screens.kt:657:74 Unresolved reference 'KeyboardOptions'.
+e: file:///home/runner/work/SmsRelay/SmsRelay/app/src/main/kotlin/com/lazy/smsrelay/net/Channels.kt:224:47 Unresolved reference 'getSubscriptionIds'.
+e: file:///home/runner/work/SmsRelay/SmsRelay/app/src/main/kotlin/com/lazy/smsrelay/net/Channels.kt:225:51 Unresolved reference 'indices'.
+e: file:///home/runner/work/SmsRelay/SmsRelay/app/src/main/kotlin/com/lazy/smsrelay/net/Channels.kt:226:73 No 'get' operator method providing array access.
 
 FAILURE: Build failed with an exception.
 
@@ -290,5 +288,5 @@ Caused by: org.jetbrains.kotlin.gradle.tasks.CompilationErrorException: Compilat
 	... 2 more
 
 
-BUILD FAILED in 2m 21s
+BUILD FAILED in 2m 28s
 36 actionable tasks: 36 executed
