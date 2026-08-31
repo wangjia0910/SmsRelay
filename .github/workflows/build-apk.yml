@@ -24,11 +24,10 @@ jobs:
 
       - name: Install SDK packages (android-37 + build-tools)
         run: |
-          sdkmanager "platforms;android-37" "platform-tools"
-          # build-tools 版本按可用情况回退尝试
-          for v in 37.0.0 36.0.0 35.0.0; do
-            if sdkmanager "build-tools;$v"; then echo "build-tools $v installed"; break; fi
-          done
+          # 全新 SDK 必须先接受 license，否则非交互模式下安装会直接失败
+          yes | sdkmanager --licenses > /dev/null 2>&1 || true
+          export PATH="$PATH:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin"
+          sdkmanager "platforms;android-37" "build-tools;37.0.0"
 
       - name: Make gradlew executable
         run: chmod +x ./gradlew
