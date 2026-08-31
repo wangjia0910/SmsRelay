@@ -7,6 +7,7 @@ import android.content.Intent
 import android.os.Build
 import android.telephony.SmsManager
 import android.telephony.SubscriptionManager
+import com.lazy.smsrelay.core.Otp
 import com.lazy.smsrelay.core.Template
 import com.lazy.smsrelay.data.ChannelConfig
 import com.lazy.smsrelay.data.ChannelType
@@ -57,7 +58,7 @@ object Sender {
             put("text", item.text)
             put("from", item.sender)
             put("body", item.body)
-            put("otp", Template.extractOtp(item.body) ?: "")
+            put("otp", Otp.extract(item.body) ?: "")
             put("sim", item.simSlot)
             put("source", item.source)
             put("rule", item.rule)
@@ -220,9 +221,9 @@ object Sender {
     private fun resolveSmsManager(simSlot: Int): SmsManager {
         if (simSlot >= 0 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             runCatching {
-                val ids = SubscriptionManager.getSubscriptionIds(simSlot)
-                if (ids != null && ids.isNotEmpty()) {
-                    return SmsManager.getSmsManagerForSubscriptionId(ids[0])
+                val ids = SubscriptionManager.getSubscriptionIds()
+                if (ids != null && simSlot in ids.indices) {
+                    return SmsManager.getSmsManagerForSubscriptionId(ids[simSlot])
                 }
             }
         }
