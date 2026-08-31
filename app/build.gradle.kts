@@ -1,5 +1,3 @@
-import java.util.Properties
-
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -8,17 +6,24 @@ plugins {
 
 // 读取 local.properties 里的 release 签名；未配置则回退到 Android 默认 debug 密钥，
 // 保证 `assembleRelease` 始终能产出可安装的 apk（自用足够，只是不能上架分发）。
+// 注意：Gradle Kotlin DSL 环境下 java.util.Properties 无法解析，这里用纯 Kotlin 解析。
 fun releaseSigning(rootDir: File): Map<String, String>? {
     val f = File(rootDir, "local.properties")
     if (!f.exists()) return null
-    val p = java.util.Properties()
-    f.inputStream().use { p.load(it) }
-    val store = p.getProperty("RELEASE_STORE_FILE")?.takeIf { it.isNotBlank() } ?: return null
+    val props = f.readLines()
+        .map { it.trim() }
+        .filter { it.isNotEmpty() && !it.startsWith("#") }
+        .mapNotNull { line ->
+            val eq = line.indexOf('=')
+            if (eq < 0) null else line.substring(0, eq).trim() to line.substring(eq + 1).trim()
+        }
+        .toMap()
+    val store = props["RELEASE_STORE_FILE"]?.takeIf { it.isNotEmpty() } ?: return null
     return mapOf(
         "storeFile" to store,
-        "storePassword" to (p.getProperty("RELEASE_STORE_PASSWORD") ?: ""),
-        "keyAlias" to (p.getProperty("RELEASE_KEY_ALIAS") ?: "smsrelay"),
-        "keyPassword" to (p.getProperty("RELEASE_KEY_PASSWORD") ?: "")
+        "storePassword" to (props["RELEASE_STORE_PASSWORD"] ?: ""),
+        "keyAlias" to (props["RELEASE_KEY_ALIAS"] ?: "smsrelay"),
+        "keyPassword" to (props["RELEASE_KEY_PASSWORD"] ?: "")
     )
 }
 
