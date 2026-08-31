@@ -21,7 +21,7 @@
 
 | 决策 | 取值 | 原因 |
 |------|------|------|
-| `compileSdk` | 37 | 拿到 Android 17 的 API 与 lint 检查 |
+| `compileSdk` | **36** | 截至 2026-08-31 官方 SDK 稳定仓库尚无 `platform-37`，compileSdk=37 在本地与 CI 均无法编译；锁 36 后工程仍可在 Android 17 设备上以 targetSdk=36 兼容行为运行 |
 | `targetSdk` | **36** | Android 17 起非默认短信应用读 OTP 短信延迟 3 小时，锁 36 规避 |
 | `minSdk` | 26 | 覆盖在役的小米/红米机型 |
 | FGS 类型 | `remoteMessaging` | 语义贴合「设备间消息转发」，比 `specialUse` 好过审 |
@@ -41,18 +41,20 @@
 签名回退逻辑（未配置签名时自动使用 Android debug 密钥，保证一定能出可安装包）。
 
 ### 方式一：GitHub Actions 云端出包（零本地环境）
-> 云端出包的 workflow 文件以示例形式保存在 `docs/build-apk.yml.example`，**默认未启用**。
-> 原因：GitHub 禁止没有 `workflow` scope 的 PAT 推送 workflow 文件。启用步骤：
-> 1. 将 `docs/build-apk.yml.example` 复制为 `.github/workflows/build-apk.yml`
-> 2. 用**带有 `workflow` scope** 的 GitHub PAT 重新推送到仓库
-> 3. 进入仓库 **Actions → Build SmsRelay APK → Run workflow**
-> 4. 运行结束后在 **Artifacts** 里下载 `SmsRelay-release-apk`，即为已签名的 `app-release.apk`
-> 5. 手机开启「未知来源安装」后直接安装
+> 云端出包的 workflow **已启用**：`.github/workflows/build-apk.yml`。
+> 推送到 `master` 分支（或手动 **Actions → Build SmsRelay APK → Run workflow**）即自动构建。
 
-> CI 流程会在云端自动生成临时 keystore 签名，仅供自用；若要正式分发，请改用你自己的签名密钥（见方式二）。
+流程：
+1. CI 在云端用 `sdkmanager` 安装 `platforms;android-36` + `build-tools;36.0.0`，并用 `keytool` 生成临时 keystore 签名
+2. 执行 `./gradlew assembleRelease` 产出已签名的 `app-release.apk`
+3. 构建成功后，自动发布一个 **`ci-build-<run_id>`** 的 Release，APK 作为资产可直接下载
+
+> 临时 keystore 仅供自用；若要正式分发，请改用你自己的签名密钥（见方式二）。
+> 最新一次成功构建（run `33398665618`）的 APK：
+> `https://github.com/wangjia0910/SmsRelay/releases/download/ci-build-33398665618/app-release.apk`
 
 ### 方式二：本机 Android Studio（最直观）
-1. 安装支持 compileSdk 37 的 Android Studio（最新稳定版）
+1. 安装支持 compileSdk 36 的 Android Studio（最新稳定版）
 2. 打开 `SmsRelay` 目录，等待 Gradle 同步
 3. 选 `Build → Generate Signed Bundle / APK`，按向导生成自己的签名密钥并构建
 4. 产物在 `app/build/outputs/apk/release/app-release.apk`
@@ -64,7 +66,7 @@
 
 ### 前置环境要求
 - JDK 17
-- Android SDK 已安装 `platforms;android-37`（compileSdk = 37 必需）与对应 `build-tools`
+- Android SDK 已安装 `platforms;android-36`（compileSdk = 36 必需）与对应 `build-tools`
 - 复制 `.local.properties.example` 为 `local.properties`，填好 `sdk.dir`；release 签名可选，不填则回退 debug 密钥
 - 真机调试（模拟器无短信功能，请用真机 + 另一台手机发短信验证）
 
