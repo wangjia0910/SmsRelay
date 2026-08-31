@@ -49,17 +49,16 @@ Unable to strip the following libraries, packaging them as they are: libandroidx
 > Task :app:mapReleaseSourceSetPaths
 > Task :app:generateReleaseResources
 > Task :app:packageReleaseResources
-> Task :app:mergeReleaseResources
 > Task :app:createReleaseCompatibleScreenManifests
 > Task :app:extractDeepLinksRelease
 > Task :app:parseReleaseLocalResources
+> Task :app:mergeReleaseResources
 > Task :app:processReleaseMainManifest
 > Task :app:processReleaseManifest
+> Task :app:javaPreCompileRelease
 > Task :app:desugarReleaseFileDependencies
 > Task :app:mergeReleaseStartupProfile
-> Task :app:javaPreCompileRelease
 > Task :app:processReleaseManifestForPackage
-> Task :app:processReleaseResources
 > Task :app:mergeExtDexRelease
 > Task :app:mergeReleaseArtProfile
 > Task :app:mergeReleaseShaders
@@ -69,32 +68,16 @@ Unable to strip the following libraries, packaging them as they are: libandroidx
 > Task :app:compressReleaseAssets
 > Task :app:extractReleaseVersionControlInfo
 > Task :app:extractProguardFiles
+> Task :app:processReleaseResources
 > Task :app:collectReleaseDependencies
 > Task :app:sdkReleaseDependencyData
 > Task :app:validateSigningRelease
 > Task :app:writeReleaseAppMetadata
-> Task :app:optimizeReleaseResources
 > Task :app:writeReleaseSigningConfigVersions
+> Task :app:optimizeReleaseResources
 
 > Task :app:compileReleaseKotlin FAILED
-e: file:///home/runner/work/SmsRelay/SmsRelay/app/src/main/kotlin/com/lazy/smsrelay/data/Prefs.kt:86:9 Platform declaration clash: The following declarations have the same JVM signature (setServiceEnabled(Landroid/content/Context;Z)V):
-    fun setServiceEnabled(ctx: Context, v: Boolean): Unit defined in com.lazy.smsrelay.data.Prefs
-    fun Context.`<set-serviceEnabled>`(v: Boolean): Unit defined in com.lazy.smsrelay.data.Prefs
-e: file:///home/runner/work/SmsRelay/SmsRelay/app/src/main/kotlin/com/lazy/smsrelay/data/Prefs.kt:127:9 Platform declaration clash: The following declarations have the same JVM signature (setMaskOtpInLog(Landroid/content/Context;Z)V):
-    fun setMaskOtpInLog(ctx: Context, v: Boolean): Unit defined in com.lazy.smsrelay.data.Prefs
-    fun Context.`<set-maskOtpInLog>`(v: Boolean): Unit defined in com.lazy.smsrelay.data.Prefs
-e: file:///home/runner/work/SmsRelay/SmsRelay/app/src/main/kotlin/com/lazy/smsrelay/data/Prefs.kt:137:9 Platform declaration clash: The following declarations have the same JVM signature (setOtpDropExpired(Landroid/content/Context;Z)V):
-    fun setOtpDropExpired(ctx: Context, v: Boolean): Unit defined in com.lazy.smsrelay.data.Prefs
-    fun Context.`<set-otpDropExpired>`(v: Boolean): Unit defined in com.lazy.smsrelay.data.Prefs
-e: file:///home/runner/work/SmsRelay/SmsRelay/app/src/main/kotlin/com/lazy/smsrelay/data/Prefs.kt:144:5 Platform declaration clash: The following declarations have the same JVM signature (setServiceEnabled(Landroid/content/Context;Z)V):
-    fun setServiceEnabled(ctx: Context, v: Boolean): Unit defined in com.lazy.smsrelay.data.Prefs
-    fun Context.`<set-serviceEnabled>`(v: Boolean): Unit defined in com.lazy.smsrelay.data.Prefs
-e: file:///home/runner/work/SmsRelay/SmsRelay/app/src/main/kotlin/com/lazy/smsrelay/data/Prefs.kt:146:5 Platform declaration clash: The following declarations have the same JVM signature (setMaskOtpInLog(Landroid/content/Context;Z)V):
-    fun setMaskOtpInLog(ctx: Context, v: Boolean): Unit defined in com.lazy.smsrelay.data.Prefs
-    fun Context.`<set-maskOtpInLog>`(v: Boolean): Unit defined in com.lazy.smsrelay.data.Prefs
-e: file:///home/runner/work/SmsRelay/SmsRelay/app/src/main/kotlin/com/lazy/smsrelay/data/Prefs.kt:149:5 Platform declaration clash: The following declarations have the same JVM signature (setOtpDropExpired(Landroid/content/Context;Z)V):
-    fun setOtpDropExpired(ctx: Context, v: Boolean): Unit defined in com.lazy.smsrelay.data.Prefs
-    fun Context.`<set-otpDropExpired>`(v: Boolean): Unit defined in com.lazy.smsrelay.data.Prefs
+e: file:///home/runner/work/SmsRelay/SmsRelay/app/src/main/kotlin/com/lazy/smsrelay/ui/Screens.kt:214:33 Unresolved reference 'serviceEnabled'.
 
 FAILURE: Build failed with an exception.
 
@@ -303,5 +286,5 @@ Caused by: org.jetbrains.kotlin.gradle.tasks.CompilationErrorException: Compilat
 	... 2 more
 
 
-BUILD FAILED in 2m 28s
+BUILD FAILED in 2m 40s
 36 actionable tasks: 36 executed
