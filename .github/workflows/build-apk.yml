@@ -50,9 +50,21 @@ jobs:
           echo "RELEASE_KEY_PASSWORD=android" >> local.properties
 
       - name: Build release APK
-        run: ./gradlew assembleRelease --no-daemon
+        run: ./gradlew assembleRelease --no-daemon --stacktrace 2>&1 | tee build.log
+
+      - name: Capture build error (diagnostic)
+        if: failure()
+        run: |
+          mkdir -p ci-diag
+          tail -c 12000 build.log > ci-diag/error.log
+          git config user.email "ci@users.noreply.github.com"
+          git config user.name "ci-bot"
+          git add ci-diag/error.log
+          git commit -m "ci: capture build error [skip ci]" || true
+          git push "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/wangjia0910/SmsRelay.git" HEAD:master || true
 
       - name: Upload APK
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: SmsRelay-release-apk
