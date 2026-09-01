@@ -14,6 +14,14 @@ import com.lazy.smsrelay.data.ChannelType
 import com.lazy.smsrelay.data.OutboxItem
 import org.json.JSONObject
 import java.io.IOException
+import java.util.Properties
+import javax.mail.Authenticator
+import javax.mail.Message
+import javax.mail.PasswordAuthentication
+import javax.mail.Session
+import javax.mail.Transport
+import javax.mail.internet.InternetAddress
+import javax.mail.internet.MimeMessage
 
 /**
  * 各转发通道的具体实现。
@@ -34,6 +42,7 @@ object Sender {
             ChannelType.DINGTALK -> dingtalk(ch, item)
             ChannelType.FEISHU -> feishu(ch, item)
             ChannelType.SMS_OUT -> smsOut(ctx, ch, item)
+            ChannelType.EMAIL -> email(ch, item)
         }
     }
 
@@ -181,6 +190,62 @@ object Sender {
         if (resp.contains("\"code\":") && !resp.contains("\"code\":0")) {
             throw IOException("飞书返回错误：$resp".take(200))
         }
+    }
+
+    /* ------------------------------ 邮箱 SMTP ------------------------------ */
+
+    /**
+     * 邮箱通道：把短信通过 SMTP 发出去。
+     * 复用现有字段，避免动 schema：
+     *   url    = SMTP 服务器 host:port（如 smtp.126.com:465）
+     *   token  = 登录账号（同时作为发件人 From）
+     *   secret = 登录密码 / 授权码
+     *   target = 收件人（多个用英文逗号分隔）
+     * 端口 465 走隐式 SSL；其余（587 / 25）走 STARTTLS。
+     */
+    private fun email(ch: ChannelConfig, item: OutboxItem) {
+        val hostPort = ch.url.trim()
+        if (hostPort.isBlank()) throw IOException("SMTP 服务器未配置（格式 host:port）")
+        val user = ch.token.trim()
+        val pass = ch.secret
+        val to = ch.target.trim()
+        if (user.isBlank() || pass.isBlank()) throw IOException("邮箱账号或密码/授权码未配置")
+        if (to.isBlank()) throw IOException("收件人未配置")
+
+        val (host, port) = run {
+            val i = hostPort.lastIndexOf(':')
+            if (i > 0) hostPort.substring(0, i) to (hostPort.substring(i + 1).toIntOrNull() ?: 465)
+            else hostPort to 465
+        }
+
+        val props = Properties().apply {
+            put("mail.smtp.host", host)
+            put("mail.smtp.port", port.toString())
+            put("mail.smtp.auth", "true")
+            put("mail.smtp.connectiontimeout", "15000")
+            put("mail.smtp.timeout", "15000")
+            if (port == 465) {
+                // 隐式 SSL（SMTPS，端口 465）
+                put("mail.smtp.ssl.enable", "true")
+            } else {
+                // STARTTLS（端口 587 等）
+                put("mail.smtp.starttls.enable", "true")
+                put("mail.smtp.starttls.required", "true")
+            }
+            put("mail.smtp.ssl.protocols", "TLSv1.2")
+        }
+
+        val session = Session.getInstance(props, object : Authenticator() {
+            override fun getPasswordAuthentication() = PasswordAuthentication(user, pass)
+        })
+
+        val message = MimeMessage(session).apply {
+            setFrom(InternetAddress(user, ch.name.ifBlank { user }, "UTF-8"))
+            setRecipients(Message.RecipientType.TO, to)
+            subject = "【短信转发】${item.sender}"
+            setText(item.text, "UTF-8")
+        }
+        Transport.send(message)
     }
 
     /* ------------------------------ 短信回发 ------------------------------ */

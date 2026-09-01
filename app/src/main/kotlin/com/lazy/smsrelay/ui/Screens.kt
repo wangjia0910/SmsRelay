@@ -608,6 +608,7 @@ private fun ChannelDialog(
     var template by remember { mutableStateOf(ch.template) }
     var expanded by remember { mutableStateOf(false) }
 
+    // 邮箱通道复用现有字段：url=host:port，token=账号，secret=密码/授权码，target=收件人
     val hint = when (type) {
         ChannelType.WEBHOOK -> "接收 JSON 的完整地址，建议 HTTPS"
         ChannelType.BARK -> "device_key（URL 留空则用官方 api.day.app）"
@@ -617,7 +618,21 @@ private fun ChannelDialog(
         ChannelType.DINGTALK -> "机器人 Webhook 地址（含 access_token）"
         ChannelType.FEISHU -> "机器人 Webhook 地址"
         ChannelType.SMS_OUT -> "目标手机号"
+        ChannelType.EMAIL -> "SMTP 服务器 host:port（如 smtp.126.com:465）。端口 465 走 SSL，587/25 走 STARTTLS；密码通常是邮箱「授权码」而非登录密码"
     }
+
+    val tokenLabel = if (type == ChannelType.EMAIL) "邮箱账号（发件人）" else "Token / Key"
+    val secretLabel = if (type == ChannelType.EMAIL) "密码 / 授权码" else "签名密钥（可选）"
+    val targetLabel = when (type) {
+        ChannelType.TELEGRAM -> "chat_id"
+        ChannelType.SMS_OUT -> "目标手机号"
+        ChannelType.EMAIL -> "收件人（多个用逗号分隔）"
+        else -> "目标"
+    }
+    val secretVisible = type == ChannelType.DINGTALK || type == ChannelType.FEISHU ||
+        type == ChannelType.WEBHOOK || type == ChannelType.EMAIL
+    val targetVisible = type == ChannelType.TELEGRAM || type == ChannelType.SMS_OUT ||
+        type == ChannelType.EMAIL
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -639,21 +654,22 @@ private fun ChannelDialog(
                 }
                 Spacer(Modifier.height(8.dp))
                 if (type != ChannelType.SMS_OUT) {
-                    OutlinedTextField(url, { url = it }, label = { Text("地址 URL") })
+                    OutlinedTextField(
+                        url, { url = it },
+                        label = { Text(if (type == ChannelType.EMAIL) "SMTP 服务器（host:port）" else "地址 URL") }
+                    )
                     Spacer(Modifier.height(8.dp))
                 }
-                OutlinedTextField(token, { token = it }, label = { Text("Token / Key") }, singleLine = true)
+                OutlinedTextField(token, { token = it }, label = { Text(tokenLabel) }, singleLine = true)
                 Spacer(Modifier.height(8.dp))
-                if (type == ChannelType.DINGTALK || type == ChannelType.FEISHU ||
-                    type == ChannelType.WEBHOOK
-                ) {
-                    OutlinedTextField(secret, { secret = it }, label = { Text("签名密钥（可选）") }, singleLine = true)
+                if (secretVisible) {
+                    OutlinedTextField(secret, { secret = it }, label = { Text(secretLabel) }, singleLine = true)
                     Spacer(Modifier.height(8.dp))
                 }
-                if (type == ChannelType.TELEGRAM || type == ChannelType.SMS_OUT) {
+                if (targetVisible) {
                     OutlinedTextField(
                         target, { target = it },
-                        label = { Text(if (type == ChannelType.TELEGRAM) "chat_id" else "目标手机号") },
+                        label = { Text(targetLabel) },
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(
                             keyboardType = if (type == ChannelType.SMS_OUT) KeyboardType.Phone else KeyboardType.Text

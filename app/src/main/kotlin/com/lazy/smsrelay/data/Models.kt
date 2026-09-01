@@ -11,11 +11,12 @@ enum class ChannelType(val label: String) {
     DINGTALK("钉钉机器人"),
     FEISHU("飞书机器人"),
     SMS_OUT("转发到另一个手机号"),
+    EMAIL("邮箱 SMTP"),
     ;
 
     /** 该类型主要靠哪个字段定位目标，供 UI 提示与校验使用 */
     val primaryField: Field get() = when (this) {
-        WEBHOOK, WECOM, DINGTALK, FEISHU -> Field.URL
+        WEBHOOK, WECOM, DINGTALK, FEISHU, EMAIL -> Field.URL
         BARK, SERVERCHAN, TELEGRAM -> Field.TOKEN
         SMS_OUT -> Field.TARGET
     }
@@ -30,11 +31,11 @@ data class ChannelConfig(
     val enabled: Boolean = true,
     /** Webhook 完整地址 / 机器人回调地址 */
     val url: String = "",
-    /** Bark key、Server酱 SendKey、Telegram Bot Token */
+    /** Bark key、Server酱 SendKey、Telegram Bot Token、邮箱账号（发件人） */
     val token: String = "",
-    /** 签名密钥（钉钉 / 飞书 / 自定义 Webhook 的 HMAC） */
+    /** 签名密钥（钉钉 / 飞书 / 自定义 Webhook 的 HMAC）；邮箱通道用作登录密码/授权码 */
     val secret: String = "",
-    /** Telegram chat_id / 短信回发的目标号码 */
+    /** Telegram chat_id / 短信回发的目标号码 / 邮箱通道的收件人（多个用逗号分隔） */
     val target: String = "",
     /** 仅 SMS_OUT 使用：回发短信时走哪张卡，-1 = 系统默认卡 */
     val simSlot: Int = -1,

@@ -102,6 +102,8 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            // JavaMail 自带的 Java 9 module-info 在 Android 打包阶段会触发重复文件校验失败
+            excludes += "/META-INF/versions/**/module-info.class"
         }
     }
 }
@@ -131,4 +133,10 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("com.google.code.gson:gson:2.11.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
+
+    // -------- 邮箱通道（SMTP 发信，Android 专用 JavaMail 移植版）--------
+    // 注意：不要用桌面版的 com.sun.mail:javax.mail（依赖 java.awt/beans，Android 装不上）
+    implementation("com.sun.mail:android-mail:1.6.7")
+    // Android 没有 javax.activation，必须单独引入移植版，否则运行时崩溃
+    implementation("com.sun.mail:android-activation:1.6.7")
 }
