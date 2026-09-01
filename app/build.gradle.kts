@@ -104,6 +104,11 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
             // JavaMail 自带的 Java 9 module-info 在 Android 打包阶段会触发重复文件校验失败
             excludes += "/META-INF/versions/**/module-info.class"
+            // android-mail / android-activation 各自携带 META-INF/NOTICE*、LICENSE*、DEPENDENCIES*，
+            // 多依赖并存时 mergeReleaseJavaResource 会因重复文件而失败，统一排除
+            excludes += "/META-INF/NOTICE*"
+            excludes += "/META-INF/LICENSE*"
+            excludes += "/META-INF/DEPENDENCIES*"
         }
     }
 }
